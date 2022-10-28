@@ -1,5 +1,4 @@
 const { GraphQLScalarType, GraphQLError } = require("graphql");
-const Upload = require("./Upload");
 
 /**
  * A GraphQL `Upload` scalar that can be used in a
@@ -76,7 +75,8 @@ module.exports = new GraphQLScalarType({
     name: "Upload",
     description: "The `Upload` scalar type represents a file upload.",
     parseValue(value) {
-        if (value instanceof Upload) return value.promise;
+        if (value instanceof Promise) return value;
+        if (value.promise) return value.promise;
         throw new GraphQLError("Upload value invalid.");
     },
     parseLiteral(node) {

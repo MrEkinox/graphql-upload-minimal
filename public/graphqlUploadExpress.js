@@ -54,12 +54,13 @@ module.exports = function graphqlUploadExpress({
         const finished = new Promise((resolve) => request.on("end", resolve));
         const { send } = response;
 
-        response.send = (...args) => {
-            finished.then(() => {
-                response.send = send;
-                response.send(...args);
-            });
-        };
+        if (processRequestOptions.environment !== "gcf")
+            response.send = (...args) => {
+                finished.then(() => {
+                    response.send = send;
+                    response.send(...args);
+                });
+            };
 
         processRequest(request, response, processRequestOptions)
             .then((body) => {
